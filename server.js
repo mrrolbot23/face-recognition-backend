@@ -6,15 +6,17 @@ import handleRegister from "./controllers/register.js";
 import handleSignin from "./controllers/signin.js";
 import handleProfile from "./controllers/profile.js";
 import { handleApiCall, handleImage } from "./controllers/image.js";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 const db = knex({
   client: "pg",
   connection: {
-    host: "127.0.0.1",
-    port: 5432,
-    user: "",
-    password: "",
-    database: "face-recon",
+    host: process.env.DB_HOST,
+    port: process.env.DB_PORT,
+    user: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
   },
 });
 
@@ -23,6 +25,10 @@ const port = 5000;
 
 app.use(express.json());
 app.use(cors());
+
+app.get("/", (req, resp) => {
+  resp.send("App is working!");
+});
 
 app.post("/signin", (req, resp) => {
   handleSignin(req, resp, bcrypt, db);
@@ -44,6 +50,6 @@ app.post("/imageUrl", (req, resp) => {
   handleApiCall(req, resp);
 });
 
-app.listen(port, () => {
-  console.log(`App is running on port ${port}`);
+app.listen(process.env.PORT || port, () => {
+  console.log(`Server running on port ${process.env.PORT}`);
 });
