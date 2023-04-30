@@ -1,5 +1,8 @@
 const handleRegister = (req, resp, bcrypt, db) => {
   const { email, password, name } = req.body;
+  if (!email || !password || !name) {
+    return resp.status(400).json("no empty field allowed");
+  }
   var salt = bcrypt.genSaltSync(10);
   var hash = bcrypt.hashSync(password, salt);
   db.transaction((trx) => {

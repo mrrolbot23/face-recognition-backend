@@ -1,14 +1,18 @@
 const handleSignin = (req, resp, bcrypt, db) => {
+  const { password, email } = req.body;
+  if (!email || !password) {
+    return resp.status(400).json("no empty field allowed");
+  }
   db.select("email", "hash")
     .from("login")
-    .where("email", "=", req.body.email)
+    .where("email", "=", email)
     .then((data) => {
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
+      const isValid = bcrypt.compareSync(password, data[0].hash);
       if (isValid) {
         return db
           .select("*")
           .from("users")
-          .where("email", "=", req.body.email)
+          .where("email", "=", email)
           .then((user) => {
             resp.json(user[0]);
           })
